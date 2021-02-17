@@ -17,7 +17,8 @@ function createFeatures(earthquakeData){
     console.log("creating Features")
     // define what to do with each feature
     function onEachFeature(feature, layer){
-        layer.bindPopup("<h3>"+ feature.properties.place + "</h3><h4>Magnitude: "+ feature.properties.mag + "</h4><h4>Depth: "+ feature.geometry.coordinates[2] +"</h4>")
+        var d = new Date(feature.properties.time).toString()
+        layer.bindPopup("<h3>"+ feature.properties.place + "</h3><h4>Magnitude: "+ feature.properties.mag + " Depth: "+ feature.geometry.coordinates[2].toFixed(2) +"</h4><p>"+ d.slice(0,24) +"<br>"+ d.slice(26) +"</p>")
     }
     //change color based on depth
     function adjustColor(depth){
@@ -81,5 +82,30 @@ function createMap(quakes){
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
       }).addTo(myMap);
-}
+
+    var legend = L.control({ position: "bottomright"});
+    legend.onAdd = function(){
+        var div = L.DomUtil.create("div", "info legend");
+        var limits = gradientValues.map(d => d.breakpoint);
+        var colors = gradientValues.map(d => d.color);
+        var labels = []
+
+        var legendInfo = "<h1>Quake Depth</h1>" +
+            "<div class=\"labels\">" +
+                "<div class=\"min\"><" + limits[0] + "</div>" +
+                "<div class=\"max\">>" + limits[limits.length - 2] + "<\div>" +
+            "</div>";
+
+        div.innerHTML = legendInfo;
+
+        limits.forEach(function(limit, index) {
+            labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
+        });
+
+        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+        return div;
+    };
+
+    legend.addTo(myMap);
+};
 
