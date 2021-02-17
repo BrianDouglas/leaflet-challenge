@@ -9,12 +9,10 @@ var gradientValues = [
     {breakpoint: 10000, color:"#360259"}];
 
 d3.json(queryURL, function(d){
-    console.log(d.features)
     createFeatures(d.features);
 });
 
 function createFeatures(earthquakeData){
-    console.log("creating Features")
     // define what to do with each feature
     function onEachFeature(feature, layer){
         var d = new Date(feature.properties.time).toString()
